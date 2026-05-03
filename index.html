@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Calendar</title>
+
+<style>
+body{
+  margin:0;
+  background:#1A0F0F;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:Arial, sans-serif;
+}
+
+/* container */
+.calendar{
+  width:260px;
+  background:#1A0F0F;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.5);
+  text-align:center;
+  border:1.5px solid #3B0A0A;
+  padding:10px;
+  box-sizing:border-box;
+}
+
+/* header */
+.header{
+  font-size:15px;
+  margin-bottom:8px;
+  color:#FFE4E6;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
+/* grid */
+.days, .dates{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+
+/* weekday */
+.days div{
+  font-size:11px;
+  font-weight:600;
+  color:#FFE4E6;
+  opacity:0.85;
+}
+
+/* date cells */
+.dates div{
+  padding:6px 0;
+  border-radius:6px;
+  background:#2a1010;
+  color:#FFE4E6;
+  font-size:11px;
+  transition:0.2s ease;
+  cursor:pointer;
+}
+
+/* hover */
+.dates div:hover{
+  background:#3B0A0A;
+  transform:scale(1.05);
+}
+
+/* today */
+.today{
+  background:#EF4444 !important;
+  color:#1A0F0F !important;
+  font-weight:bold;
+  box-shadow:0 0 0 2px #EF4444;
+}
+</style>
+</head>
+
+<body>
+
+<div class="calendar">
+  <div class="header" id="monthYear"></div>
+
+  <div class="days">
+    <div>S</div><div>M</div><div>T</div><div>W</div>
+    <div>T</div><div>F</div><div>S</div>
+  </div>
+
+  <div class="dates" id="dates"></div>
+</div>
+
+<script>
+const monthYear = document.getElementById("monthYear");
+const dates = document.getElementById("dates");
+
+const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth();
+const today = now.getDate();
+
+const months = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+
+monthYear.innerText = `${months[month]} ${year}`;
+
+const firstDay = new Date(year, month, 1).getDay();
+const lastDate = new Date(year, month + 1, 0).getDate();
+
+dates.innerHTML = "";
+
+// blank cells
+for(let i=0;i<firstDay;i++){
+  dates.innerHTML += "<div></div>";
+}
+
+// dates
+for(let i=1;i<=lastDate;i++){
+  if(i === today){
+    dates.innerHTML += `<div class="today">${i}</div>`;
+  } else {
+    dates.innerHTML += `<div>${i}</div>`;
+  }
+}
+</script>
+
+</body>
+</html>
