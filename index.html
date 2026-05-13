@@ -1,79 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Sapphire Club</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-/* ================= BASE ================= */
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
 body{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:18px 0 40px;
-  font-family:'Poppins',sans-serif;
-  background:radial-gradient(circle at top,#1e3a8a 0%,#0f172a 45%,#020617 100%);
-  color:#f5d77a;
-}
-
-/* ================= WRAPPER ================= */
-
-.wrapper{
-  width:100%;
-  max-width:300px;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-  margin-top:22px;
-}
-
-/* ================= MUSIC ================= */
-
-.music-player, .calendar{
-  width:100%;
-  background:rgba(10,25,55,0.88);
-  border-radius:24px;
-  padding:12px;
-  border:2px solid rgba(255,215,0,0.65);
-}
-
-/* ================= CHESSBOARD ================= */
-
-.board-wrapper{
-  width:100%;
+  margin:0;
+  height:100vh;
   display:flex;
   justify-content:center;
+  align-items:center;
+  background:#050b1a;
+  font-family:Arial;
+  overflow:hidden;
+}
+
+.board-wrapper{
   position:relative;
 }
 
 .board{
-  width:300px;
-  height:300px;
+  width:420px;
+  height:420px;
   display:grid;
   grid-template-columns:repeat(8,1fr);
   grid-template-rows:repeat(8,1fr);
-  border:6px solid #020617;
+  border:10px solid #020617;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
 }
 
+/* SOFT EYE-RELAXING COLORS */
 .white{
-  background:#d9e2ec;
+  background:linear-gradient(145deg,#e8eef5,#cfd8e3);
 }
 
 .black{
-  background:#486581;
+  background:linear-gradient(145deg,#4b6584,#2f4858);
 }
 
 .square{
@@ -85,88 +47,55 @@ body{
 .piece{
   width:85%;
   height:85%;
+  object-fit:contain;
+  user-select:none;
   pointer-events:none;
 }
 
-.title{
+/* coordinates */
+.coord{
   position:absolute;
-  top:-20px;
-  font-size:11px;
-  color:white;
+  font-size:12px;
+  color:#cbd5e1;
   font-weight:bold;
 }
 
-/* ================= CALENDAR ================= */
-
-.calendar{
-  margin-top:5px;
+.file{
+  bottom:-22px;
 }
 
-.header{
-  text-align:center;
-  font-size:18px;
-  font-weight:800;
-  color:#ffd700;
+.rank{
+  left:-20px;
 }
 
-.days,.dates{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:4px;
+/* title */
+.title{
+  position:absolute;
+  top:-45px;
+  left:0;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+  letter-spacing:1px;
 }
-
-.dates div{
-  height:28px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#0f172a;
-  border-radius:6px;
-  font-size:11px;
-}
-
-.today{
-  background:#ffd700 !important;
-  color:#000 !important;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
+<div class="board-wrapper">
 
-  <!-- MUSIC -->
-  <div class="music-player">
-    <iframe width="100%" height="160"
-      src="https://www.youtube.com/embed/e_AZJzYe7CU"
-      allowfullscreen>
-    </iframe>
+  <div class="title">
+    Magnus Carlsen vs Veselin Topalov (2010)
   </div>
 
-  <!-- CHESSBOARD (INSERTED HERE) -->
-  <div class="board-wrapper">
-    <div class="title">Magnus Carlsen vs Topalov (2010)</div>
-    <div class="board" id="board"></div>
-  </div>
-
-  <!-- CALENDAR -->
-  <div class="calendar">
-    <div class="header" id="monthYear"></div>
-    <div class="days">
-      <div>SUN</div><div>MON</div><div>TUE</div>
-      <div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
-    </div>
-    <div class="dates" id="dates"></div>
-  </div>
+  <div class="board" id="board"></div>
 
 </div>
 
 <script>
 
-/* ================= CHESS ================= */
-
+/* PIECES */
 const img = {
   P:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png",
   R:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png",
@@ -174,6 +103,7 @@ const img = {
   B:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png",
   Q:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png",
   K:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png",
+
   p:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png",
   r:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png",
   n:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png",
@@ -182,59 +112,177 @@ const img = {
   k:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png"
 };
 
+/* START POSITION */
 const startState = [
-"r","n","b","q","k","b","n","r",
-"p","p","p","p","p","p","p","p",
-"","","","","","","","",
-"","","","","","","","",
-"","","","","","","","",
-"","","","","","","","",
-"P","P","P","P","P","P","P","P",
-"R","N","B","Q","K","B","N","R"
+  "r","n","b","q","k","b","n","r",
+  "p","p","p","p","p","p","p","p",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "P","P","P","P","P","P","P","P",
+  "R","N","B","Q","K","B","N","R"
 ];
 
 let state = [...startState];
 
 const board = document.getElementById("board");
 
+/* MOVES */
+const moves = [
+
+[52,36],[11,27],
+[36,27],[3,27],
+[57,42],[27,24],
+[51,35],[6,21],
+[62,45],[10,18],
+[61,34],[2,29],
+[34,43],[12,20],
+[59,52],[29,38],
+castleWhite(),
+[1,18],
+[43,34],
+castleBlack(),
+[55,39],
+[8,16],
+[45,28]
+
+];
+
+/* CASTLING */
+function castleWhite(){
+  return ["castleWhite"];
+}
+
+function castleBlack(){
+  return ["castleBlack"];
+}
+
+/* DRAW */
 function draw(){
-  board.innerHTML="";
+
+  board.innerHTML = "";
+
   state.forEach((p,i)=>{
-    const sq=document.createElement("div");
-    const r=Math.floor(i/8),c=i%8;
-    sq.className="square "+((r+c)%2?"black":"white");
+
+    const sq = document.createElement("div");
+
+    const r = Math.floor(i/8);
+    const c = i%8;
+
+    sq.className =
+      "square " + ((r+c)%2 ? "black" : "white");
 
     if(p){
-      const im=document.createElement("img");
-      im.className="piece";
-      im.src=img[p];
+      const im = document.createElement("img");
+      im.className = "piece";
+      im.src = img[p];
       sq.appendChild(im);
     }
 
     board.appendChild(sq);
+
   });
+
 }
 
+/* COORDINATES */
+function addCoords(){
+
+  const wrapper = document.querySelector(".board-wrapper");
+
+  const files = ["A","B","C","D","E","F","G","H"];
+
+  for(let i=0;i<8;i++){
+
+    const f = document.createElement("div");
+
+    f.className = "coord file";
+    f.style.left = (i*52 + 30) + "px";
+    f.textContent = files[i];
+
+    wrapper.appendChild(f);
+  }
+
+  for(let i=0;i<8;i++){
+
+    const r = document.createElement("div");
+
+    r.className = "coord rank";
+    r.style.top = (i*52 + 30) + "px";
+    r.textContent = 8-i;
+
+    wrapper.appendChild(r);
+  }
+}
+
+addCoords();
+
+/* RESET */
+function resetBoard(){
+
+  state = [...startState];
+  moveIndex = 0;
+  draw();
+}
+
+/* PLAY LOOP */
+let moveIndex = 0;
+
+function play(){
+
+  if(moveIndex >= moves.length){
+
+    setTimeout(()=>{
+      resetBoard();
+      play();
+    },2500);
+
+    return;
+  }
+
+  setTimeout(()=>{
+
+    const move = moves[moveIndex];
+
+    if(move[0] === "castleWhite"){
+
+      state[62] = state[60];
+      state[60] = "";
+
+      state[61] = state[63];
+      state[63] = "";
+    }
+
+    else if(move[0] === "castleBlack"){
+
+      state[6] = state[4];
+      state[4] = "";
+
+      state[5] = state[7];
+      state[7] = "";
+    }
+
+    else{
+
+      const [from,to] = move;
+
+      state[to] = state[from];
+      state[from] = "";
+    }
+
+    draw();
+
+    moveIndex++;
+
+    play();
+
+  },700);
+}
+
+/* START */
 draw();
-
-/* ================= CALENDAR ================= */
-
-const monthYear=document.getElementById("monthYear");
-const dates=document.getElementById("dates");
-
-const now=new Date();
-const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-monthYear.innerText=`${months[now.getMonth()]} ${now.getFullYear()}`;
-
-const firstDay=new Date(now.getFullYear(),now.getMonth(),1).getDay();
-const lastDate=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-
-for(let i=0;i<firstDay;i++) dates.innerHTML+="<div></div>";
-
-for(let i=1;i<=lastDate;i++){
-  dates.innerHTML+=`<div class="${i===now.getDate()?'today':''}">${i}</div>`;
-}
+play();
 
 </script>
 
