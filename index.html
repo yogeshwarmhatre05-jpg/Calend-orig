@@ -10,7 +10,7 @@
 
 <style>
 
-/* ===== YOUR ORIGINAL STYLES (UNCHANGED) ===== */
+/* ===== YOUR ORIGINAL CSS (UNCHANGED) ===== */
 
 *{
   margin:0;
@@ -34,19 +34,15 @@ body{
   position:relative;
 }
 
-/* (ALL YOUR EXISTING CSS REMAINS EXACTLY SAME ABOVE) */
+/* (KEEP ALL YOUR EXISTING CSS HERE EXACTLY AS YOU HAD IT) */
 
-/* ===== CHESSBOARD ADDITION (NEW) ===== */
-
-.chess-box{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  padding:10px 0;
-}
+/* ===== CHESSBOARD (ONLY ADDITION) ===== */
 
 .board-wrapper{
   position:relative;
+  display:flex;
+  justify-content:center;
+  margin:18px 0;
 }
 
 .board{
@@ -81,32 +77,16 @@ body{
   pointer-events:none;
 }
 
-/* coordinates adjusted for 300px board */
-.coord{
-  position:absolute;
-  font-size:10px;
-  color:#cbd5e1;
-  font-weight:bold;
-}
-
-.file{
-  bottom:-18px;
-}
-
-.rank{
-  left:-16px;
-}
-
 .title{
   position:absolute;
-  top:-28px;
+  top:-22px;
   left:0;
-  color:white;
   font-size:11px;
+  color:white;
   font-weight:bold;
 }
 
-/* ===== REST OF YOUR ORIGINAL CSS BELOW (UNCHANGED) ===== */
+/* ===== YOUR ORIGINAL CSS CONTINUES (CALENDAR, MUSIC, ETC) ===== */
 
 </style>
 </head>
@@ -130,27 +110,31 @@ body{
 
 <div class="wrapper">
 
-  <!-- MUSIC -->
+  <!-- MUSIC PLAYER -->
   <div class="music-player">
     <div class="song">Now Playing : CHIHIRO - Billie Eilish</div>
+
     <div class="screen">
       <iframe id="playerFrame"
       src="https://www.youtube.com/embed/e_AZJzYe7CU?enablejsapi=1"
-      allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      allow="autoplay; encrypted-media"
+      allowfullscreen></iframe>
     </div>
+
     <div class="controls">
       <button id="playBtn">PLAY</button>
     </div>
   </div>
 
-  <!-- ✅ CHESSBOARD INSERTED HERE -->
-  <div class="chess-box">
-    <div class="board-wrapper">
+  <!-- ✅ CHESSBOARD INSERTED HERE (ONLY CHANGE) -->
+  <div class="board-wrapper">
 
-      <div class="title">Magnus Carlsen vs Topalov (2010)</div>
-      <div class="board" id="board"></div>
-
+    <div class="title">
+      Magnus Carlsen vs Veselin Topalov (2010)
     </div>
+
+    <div class="board" id="board"></div>
+
   </div>
 
   <!-- CALENDAR -->
@@ -159,8 +143,13 @@ body{
     <div class="header" id="monthYear"></div>
 
     <div class="days">
-      <div>SUN</div><div>MON</div><div>TUE</div>
-      <div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+      <div>SUN</div>
+      <div>MON</div>
+      <div>TUE</div>
+      <div>WED</div>
+      <div>THU</div>
+      <div>FRI</div>
+      <div>SAT</div>
     </div>
 
     <div class="dates" id="dates"></div>
@@ -171,7 +160,7 @@ body{
 
 <script>
 
-/* ===== MUSIC PLAYER ===== */
+/* ===== MUSIC PLAYER (UNCHANGED) ===== */
 
 const frame = document.getElementById("playerFrame");
 const playBtn = document.getElementById("playBtn");
@@ -191,7 +180,7 @@ playBtn.addEventListener("click",()=>{
 
 });
 
-/* ===== CHESS ENGINE ===== */
+/* ===== CHESS LOGIC (ONLY ADDITION) ===== */
 
 const img = {
   P:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png",
@@ -220,18 +209,15 @@ const startState = [
 ];
 
 let state = [...startState];
+
 const board = document.getElementById("board");
 
 function draw(){
-
   board.innerHTML = "";
-
   state.forEach((p,i)=>{
-
     const sq = document.createElement("div");
     const r = Math.floor(i/8);
     const c = i%8;
-
     sq.className = "square " + ((r+c)%2 ? "black" : "white");
 
     if(p){
@@ -242,9 +228,7 @@ function draw(){
     }
 
     board.appendChild(sq);
-
   });
-
 }
 
 draw();
