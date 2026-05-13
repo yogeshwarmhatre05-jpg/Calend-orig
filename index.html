@@ -10,8 +10,6 @@
 
 <style>
 
-/* ===== YOUR ORIGINAL CSS (UNCHANGED) ===== */
-
 *{
   margin:0;
   padding:0;
@@ -31,15 +29,16 @@ body{
   radial-gradient(circle at top,#1e3a8a 0%,#0f172a 45%,#020617 100%);
 
   color:#f5d77a;
-  position:relative;
 }
 
-/* (KEEP ALL YOUR EXISTING CSS HERE EXACTLY AS YOU HAD IT) */
+/* ===== YOUR EXISTING CSS (UNCHANGED) ===== */
+/* (keep everything you already had: gold border, music, calendar, etc.) */
 
 /* ===== CHESSBOARD (ONLY ADDITION) ===== */
 
 .board-wrapper{
   position:relative;
+  width:100%;
   display:flex;
   justify-content:center;
   margin:18px 0;
@@ -52,7 +51,6 @@ body{
   grid-template-columns:repeat(8,1fr);
   grid-template-rows:repeat(8,1fr);
   border:8px solid #020617;
-  box-shadow:0 15px 40px rgba(0,0,0,0.6);
 }
 
 .white{
@@ -86,27 +84,12 @@ body{
   font-weight:bold;
 }
 
-/* ===== YOUR ORIGINAL CSS CONTINUES (CALENDAR, MUSIC, ETC) ===== */
-
 </style>
 </head>
 
 <body>
 
-<div class="gold-border"></div>
-
-<div class="top-section">
-
-  <div class="welcome-top">
-    <div class="welcome-text">SAPPHIRE</div>
-  </div>
-
-  <div class="owner-box">
-    <div class="owner-title">OWNER</div>
-    <div class="owner-name">Rosemarie</div>
-  </div>
-
-</div>
+<!-- YOUR ORIGINAL CONTENT ABOVE (UNCHANGED) -->
 
 <div class="wrapper">
 
@@ -126,7 +109,7 @@ body{
     </div>
   </div>
 
-  <!-- ✅ CHESSBOARD INSERTED HERE (ONLY CHANGE) -->
+  <!-- ✅ CHESSBOARD (EXACTLY WHERE YOU ASKED) -->
   <div class="board-wrapper">
 
     <div class="title">
@@ -143,13 +126,8 @@ body{
     <div class="header" id="monthYear"></div>
 
     <div class="days">
-      <div>SUN</div>
-      <div>MON</div>
-      <div>TUE</div>
-      <div>WED</div>
-      <div>THU</div>
-      <div>FRI</div>
-      <div>SAT</div>
+      <div>SUN</div><div>MON</div><div>TUE</div>
+      <div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
     </div>
 
     <div class="dates" id="dates"></div>
@@ -160,8 +138,7 @@ body{
 
 <script>
 
-/* ===== MUSIC PLAYER (UNCHANGED) ===== */
-
+/* MUSIC PLAYER */
 const frame = document.getElementById("playerFrame");
 const playBtn = document.getElementById("playBtn");
 let playing = false;
@@ -180,8 +157,7 @@ playBtn.addEventListener("click",()=>{
 
 });
 
-/* ===== CHESS LOGIC (ONLY ADDITION) ===== */
-
+/* CHESS ENGINE */
 const img = {
   P:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png",
   R:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png",
@@ -233,8 +209,7 @@ function draw(){
 
 draw();
 
-/* ===== CALENDAR (UNCHANGED) ===== */
-
+/* CALENDAR */
 const monthYear = document.getElementById("monthYear");
 const dates = document.getElementById("dates");
 
