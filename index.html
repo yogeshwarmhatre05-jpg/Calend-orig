@@ -10,6 +10,8 @@
 
 <style>
 
+/* ================= BASE ================= */
+
 *{
   margin:0;
   padding:0;
@@ -18,30 +20,43 @@
 
 body{
   min-height:100vh;
-  overflow-x:hidden;
   display:flex;
   flex-direction:column;
   align-items:center;
   padding:18px 0 40px;
   font-family:'Poppins',sans-serif;
-
-  background:
-  radial-gradient(circle at top,#1e3a8a 0%,#0f172a 45%,#020617 100%);
-
+  background:radial-gradient(circle at top,#1e3a8a 0%,#0f172a 45%,#020617 100%);
   color:#f5d77a;
 }
 
-/* ===== YOUR EXISTING CSS (UNCHANGED) ===== */
-/* (keep everything you already had: gold border, music, calendar, etc.) */
+/* ================= WRAPPER ================= */
 
-/* ===== CHESSBOARD (ONLY ADDITION) ===== */
+.wrapper{
+  width:100%;
+  max-width:300px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  margin-top:22px;
+}
+
+/* ================= MUSIC ================= */
+
+.music-player, .calendar{
+  width:100%;
+  background:rgba(10,25,55,0.88);
+  border-radius:24px;
+  padding:12px;
+  border:2px solid rgba(255,215,0,0.65);
+}
+
+/* ================= CHESSBOARD ================= */
 
 .board-wrapper{
-  position:relative;
   width:100%;
   display:flex;
   justify-content:center;
-  margin:18px 0;
+  position:relative;
 }
 
 .board{
@@ -50,15 +65,15 @@ body{
   display:grid;
   grid-template-columns:repeat(8,1fr);
   grid-template-rows:repeat(8,1fr);
-  border:8px solid #020617;
+  border:6px solid #020617;
 }
 
 .white{
-  background:linear-gradient(145deg,#e8eef5,#cfd8e3);
+  background:#d9e2ec;
 }
 
 .black{
-  background:linear-gradient(145deg,#4b6584,#2f4858);
+  background:#486581;
 }
 
 .square{
@@ -70,18 +85,49 @@ body{
 .piece{
   width:85%;
   height:85%;
-  object-fit:contain;
-  user-select:none;
   pointer-events:none;
 }
 
 .title{
   position:absolute;
-  top:-22px;
-  left:0;
+  top:-20px;
   font-size:11px;
   color:white;
   font-weight:bold;
+}
+
+/* ================= CALENDAR ================= */
+
+.calendar{
+  margin-top:5px;
+}
+
+.header{
+  text-align:center;
+  font-size:18px;
+  font-weight:800;
+  color:#ffd700;
+}
+
+.days,.dates{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+
+.dates div{
+  height:28px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#0f172a;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.today{
+  background:#ffd700 !important;
+  color:#000 !important;
 }
 
 </style>
@@ -89,75 +135,38 @@ body{
 
 <body>
 
-<!-- YOUR ORIGINAL CONTENT ABOVE (UNCHANGED) -->
-
 <div class="wrapper">
 
-  <!-- MUSIC PLAYER -->
+  <!-- MUSIC -->
   <div class="music-player">
-    <div class="song">Now Playing : CHIHIRO - Billie Eilish</div>
-
-    <div class="screen">
-      <iframe id="playerFrame"
-      src="https://www.youtube.com/embed/e_AZJzYe7CU?enablejsapi=1"
-      allow="autoplay; encrypted-media"
-      allowfullscreen></iframe>
-    </div>
-
-    <div class="controls">
-      <button id="playBtn">PLAY</button>
-    </div>
+    <iframe width="100%" height="160"
+      src="https://www.youtube.com/embed/e_AZJzYe7CU"
+      allowfullscreen>
+    </iframe>
   </div>
 
-  <!-- ✅ CHESSBOARD (EXACTLY WHERE YOU ASKED) -->
+  <!-- CHESSBOARD (INSERTED HERE) -->
   <div class="board-wrapper">
-
-    <div class="title">
-      Magnus Carlsen vs Veselin Topalov (2010)
-    </div>
-
+    <div class="title">Magnus Carlsen vs Topalov (2010)</div>
     <div class="board" id="board"></div>
-
   </div>
 
   <!-- CALENDAR -->
   <div class="calendar">
-
     <div class="header" id="monthYear"></div>
-
     <div class="days">
       <div>SUN</div><div>MON</div><div>TUE</div>
       <div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
     </div>
-
     <div class="dates" id="dates"></div>
-
   </div>
 
 </div>
 
 <script>
 
-/* MUSIC PLAYER */
-const frame = document.getElementById("playerFrame");
-const playBtn = document.getElementById("playBtn");
-let playing = false;
+/* ================= CHESS ================= */
 
-playBtn.addEventListener("click",()=>{
-
-  if(!playing){
-    frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}',"*");
-    playBtn.innerText = "PAUSE";
-  }else{
-    frame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}',"*");
-    playBtn.innerText = "PLAY";
-  }
-
-  playing = !playing;
-
-});
-
-/* CHESS ENGINE */
 const img = {
   P:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png",
   R:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png",
@@ -189,17 +198,16 @@ let state = [...startState];
 const board = document.getElementById("board");
 
 function draw(){
-  board.innerHTML = "";
+  board.innerHTML="";
   state.forEach((p,i)=>{
-    const sq = document.createElement("div");
-    const r = Math.floor(i/8);
-    const c = i%8;
-    sq.className = "square " + ((r+c)%2 ? "black" : "white");
+    const sq=document.createElement("div");
+    const r=Math.floor(i/8),c=i%8;
+    sq.className="square "+((r+c)%2?"black":"white");
 
     if(p){
-      const im = document.createElement("img");
-      im.className = "piece";
-      im.src = img[p];
+      const im=document.createElement("img");
+      im.className="piece";
+      im.src=img[p];
       sq.appendChild(im);
     }
 
@@ -209,28 +217,23 @@ function draw(){
 
 draw();
 
-/* CALENDAR */
-const monthYear = document.getElementById("monthYear");
-const dates = document.getElementById("dates");
+/* ================= CALENDAR ================= */
 
-const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth();
-const today = now.getDate();
+const monthYear=document.getElementById("monthYear");
+const dates=document.getElementById("dates");
 
-const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const now=new Date();
+const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-monthYear.innerText = `${months[month]} ${year}`;
+monthYear.innerText=`${months[now.getMonth()]} ${now.getFullYear()}`;
 
-const firstDay = new Date(year,month,1).getDay();
-const lastDate = new Date(year,month+1,0).getDate();
+const firstDay=new Date(now.getFullYear(),now.getMonth(),1).getDay();
+const lastDate=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
 
-for(let i=0;i<firstDay;i++){
-  dates.innerHTML += `<div></div>`;
-}
+for(let i=0;i<firstDay;i++) dates.innerHTML+="<div></div>";
 
 for(let i=1;i<=lastDate;i++){
-  dates.innerHTML += `<div class="${i===today?'today':''}">${i}</div>`;
+  dates.innerHTML+=`<div class="${i===now.getDate()?'today':''}">${i}</div>`;
 }
 
 </script>
