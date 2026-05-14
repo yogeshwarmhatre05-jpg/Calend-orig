@@ -1,288 +1,197 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Modern Calendar Card</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body{
+
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:#050b1a;
-  font-family:Arial;
-  overflow:hidden;
+  background:
+    radial-gradient(circle at top,#1f2f57,#090d18 65%);
+  font-family:'Poppins',sans-serif;
 }
 
-.board-wrapper{
+/* CALENDAR CARD */
+
+.calendar{
+  width:190px;
+  height:300px;
+  border-radius:30px;
+  overflow:hidden;
+  position:relative;
+
+  background:rgba(255,255,255,0.06);
+
+  backdrop-filter:blur(14px);
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  box-shadow:
+    0 20px 45px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  animation:float 4s ease-in-out infinite;
+}
+
+/* TOP BAR */
+
+.top{
+  width:100%;
+  height:90px;
+
+  background:
+    linear-gradient(135deg,#5ea0ff,#7b6dff);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   position:relative;
 }
 
-.board{
-  width:420px;
-  height:420px;
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  grid-template-rows:repeat(8,1fr);
-  border:10px solid #020617;
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
-}
-
-/* SOFT EYE-RELAXING COLORS */
-.white{
-  background:linear-gradient(145deg,#e8eef5,#cfd8e3);
-}
-
-.black{
-  background:linear-gradient(145deg,#4b6584,#2f4858);
-}
-
-.square{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.piece{
-  width:85%;
-  height:85%;
-  object-fit:contain;
-  user-select:none;
-  pointer-events:none;
-}
-
-/* coordinates */
-.coord{
+.top::after{
+  content:"";
   position:absolute;
-  font-size:12px;
-  color:#cbd5e1;
-  font-weight:bold;
+  inset:0;
+
+  background:
+    linear-gradient(
+      rgba(255,255,255,0.18),
+      transparent
+    );
 }
 
-.file{
-  bottom:-22px;
-}
-
-.rank{
-  left:-20px;
-}
-
-/* title */
-.title{
-  position:absolute;
-  top:-45px;
-  left:0;
+.month{
   color:white;
-  font-size:15px;
-  font-weight:bold;
-  letter-spacing:1px;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:2px;
+  z-index:2;
+  text-transform:uppercase;
 }
+
+/* DATE SECTION */
+
+.content{
+  flex:1;
+
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  position:relative;
+}
+
+.date{
+  font-size:96px;
+  font-weight:700;
+  color:white;
+  line-height:1;
+
+  text-shadow:
+    0 6px 18px rgba(0,0,0,0.35);
+}
+
+.year{
+  margin-top:12px;
+
+  font-size:16px;
+  font-weight:400;
+  letter-spacing:4px;
+
+  color:rgba(255,255,255,0.65);
+}
+
+/* SMALL DESIGN DETAILS */
+
+.calendar::before,
+.calendar::after{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:#0f1627;
+  border-radius:50%;
+  top:78px;
+}
+
+.calendar::before{
+  left:-9px;
+}
+
+.calendar::after{
+  right:-9px;
+}
+
+/* FLOAT ANIMATION */
+
+@keyframes float{
+  0%,100%{
+    transform:translateY(0px);
+  }
+
+  50%{
+    transform:translateY(-10px);
+  }
+}
+
 </style>
 </head>
-
 <body>
 
-<div class="board-wrapper">
+<div class="calendar">
 
-  <div class="title">
-    Magnus Carlsen vs Veselin Topalov (2010)
+  <div class="top">
+    <div class="month" id="month"></div>
   </div>
 
-  <div class="board" id="board"></div>
+  <div class="content">
+    <div class="date" id="date"></div>
+    <div class="year" id="year"></div>
+  </div>
 
 </div>
 
 <script>
 
-/* PIECES */
-const img = {
-  P:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png",
-  R:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png",
-  N:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png",
-  B:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png",
-  Q:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png",
-  K:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png",
+const today = new Date();
 
-  p:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png",
-  r:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png",
-  n:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png",
-  b:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png",
-  q:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png",
-  k:"https://images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png"
-};
-
-/* START POSITION */
-const startState = [
-  "r","n","b","q","k","b","n","r",
-  "p","p","p","p","p","p","p","p",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "P","P","P","P","P","P","P","P",
-  "R","N","B","Q","K","B","N","R"
+const months = [
+  "JAN","FEB","MAR","APR",
+  "MAY","JUN","JUL","AUG",
+  "SEP","OCT","NOV","DEC"
 ];
 
-let state = [...startState];
+document.getElementById("month").innerText =
+months[today.getMonth()];
 
-const board = document.getElementById("board");
+document.getElementById("date").innerText =
+today.getDate();
 
-/* MOVES */
-const moves = [
-
-[52,36],[11,27],
-[36,27],[3,27],
-[57,42],[27,24],
-[51,35],[6,21],
-[62,45],[10,18],
-[61,34],[2,29],
-[34,43],[12,20],
-[59,52],[29,38],
-castleWhite(),
-[1,18],
-[43,34],
-castleBlack(),
-[55,39],
-[8,16],
-[45,28]
-
-];
-
-/* CASTLING */
-function castleWhite(){
-  return ["castleWhite"];
-}
-
-function castleBlack(){
-  return ["castleBlack"];
-}
-
-/* DRAW */
-function draw(){
-
-  board.innerHTML = "";
-
-  state.forEach((p,i)=>{
-
-    const sq = document.createElement("div");
-
-    const r = Math.floor(i/8);
-    const c = i%8;
-
-    sq.className =
-      "square " + ((r+c)%2 ? "black" : "white");
-
-    if(p){
-      const im = document.createElement("img");
-      im.className = "piece";
-      im.src = img[p];
-      sq.appendChild(im);
-    }
-
-    board.appendChild(sq);
-
-  });
-
-}
-
-/* COORDINATES */
-function addCoords(){
-
-  const wrapper = document.querySelector(".board-wrapper");
-
-  const files = ["A","B","C","D","E","F","G","H"];
-
-  for(let i=0;i<8;i++){
-
-    const f = document.createElement("div");
-
-    f.className = "coord file";
-    f.style.left = (i*52 + 30) + "px";
-    f.textContent = files[i];
-
-    wrapper.appendChild(f);
-  }
-
-  for(let i=0;i<8;i++){
-
-    const r = document.createElement("div");
-
-    r.className = "coord rank";
-    r.style.top = (i*52 + 30) + "px";
-    r.textContent = 8-i;
-
-    wrapper.appendChild(r);
-  }
-}
-
-addCoords();
-
-/* RESET */
-function resetBoard(){
-
-  state = [...startState];
-  moveIndex = 0;
-  draw();
-}
-
-/* PLAY LOOP */
-let moveIndex = 0;
-
-function play(){
-
-  if(moveIndex >= moves.length){
-
-    setTimeout(()=>{
-      resetBoard();
-      play();
-    },2500);
-
-    return;
-  }
-
-  setTimeout(()=>{
-
-    const move = moves[moveIndex];
-
-    if(move[0] === "castleWhite"){
-
-      state[62] = state[60];
-      state[60] = "";
-
-      state[61] = state[63];
-      state[63] = "";
-    }
-
-    else if(move[0] === "castleBlack"){
-
-      state[6] = state[4];
-      state[4] = "";
-
-      state[5] = state[7];
-      state[7] = "";
-    }
-
-    else{
-
-      const [from,to] = move;
-
-      state[to] = state[from];
-      state[from] = "";
-    }
-
-    draw();
-
-    moveIndex++;
-
-    play();
-
-  },700);
-}
-
-/* START */
-draw();
-play();
+document.getElementById("year").innerText =
+today.getFullYear();
 
 </script>
 
